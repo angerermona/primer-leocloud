@@ -1,0 +1,85 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    app.quarkus.io/commit-id: ba454330108a4a38ed04ed7c177ba6f0e1098302
+    app.quarkus.io/build-timestamp: 2022-11-08 - 12:19:29 +0000
+  labels:
+    app.kubernetes.io/name: primer-leocloud
+    app.kubernetes.io/version: 1.0.0
+  name: primer-leocloud
+  namespace: student-m-angerer
+spec:
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080
+  selector:
+    app.kubernetes.io/name: primer-leocloud
+    app.kubernetes.io/version: 1.0.0
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    app.quarkus.io/commit-id: ba454330108a4a38ed04ed7c177ba6f0e1098302
+    app.quarkus.io/build-timestamp: 2022-11-08 - 12:19:29 +0000
+  labels:
+    app.kubernetes.io/version: 1.0.0
+    app.kubernetes.io/name: primer-leocloud
+  name: primer-leocloud
+  namespace: student-m-angerer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/version: 1.0.0
+      app.kubernetes.io/name: primer-leocloud
+  template:
+    metadata:
+      annotations:
+        app.quarkus.io/commit-id: ba454330108a4a38ed04ed7c177ba6f0e1098302
+        app.quarkus.io/build-timestamp: 2022-11-08 - 12:19:29 +0000
+      labels:
+        app.kubernetes.io/version: 1.0.0
+        app.kubernetes.io/name: primer-leocloud
+      namespace: student-m-angerer
+    spec:
+      containers:
+        - env:
+            - name: KUBERNETES_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+          image: ghcr.io/angerermona/primer-leocloud:1.0.0
+          imagePullPolicy: Always
+          name: primer-leocloud
+          ports:
+            - containerPort: 8080
+              name: http
+              protocol: TCP
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    app.quarkus.io/commit-id: ba454330108a4a38ed04ed7c177ba6f0e1098302
+    app.quarkus.io/build-timestamp: 2022-11-08 - 12:19:29 +0000
+  labels:
+    app.kubernetes.io/name: primer-leocloud
+    app.kubernetes.io/version: 1.0.0
+  name: primer-leocloud
+  namespace: student-m-angerer
+spec:
+      rules:
+        - host: student.cloud.htl-leonding.ac.at
+          http:
+            paths:
+              - path: /m.angerer(/|$)(.*)$
+                pathType: Prefix
+                backend:
+                  service:
+                    name: primer-leocloud
+                    port:
+                      number: 80
